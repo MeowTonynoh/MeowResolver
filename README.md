@@ -38,7 +38,7 @@ Detects `taskkill`/`tskill` commands in Run/RunOnce registry keys, and `AutoRun`
 Detects executables blocked via Explorer policy and the `DisallowRun` DWORD being active.
 
 ### 6. IFEO — Image File Execution Options
-Detects debugger hijacking on executables and suspicious `GlobalFlag` values that can silently terminate or redirect processes.
+Detects debugger hijacking on executables and suspicious `GlobalFlag` values that can silently terminate or redirect processes. Also detects renamed copies of the `Image File Execution Options` key (used to keep debugger entries active while hiding them from tools that only check the standard path), and alerts if read permissions on the `Windows NT` registry key have been removed to prevent enumeration entirely.
 
 ### 7. WinRAR Steganography
 Scans WinRAR's `ArcHistory` registry key for non-archive files opened with WinRAR — a common steganography indicator.
@@ -84,6 +84,18 @@ Monitors Security Event ID 4616 for manual system clock changes. Automatically s
 
 ### 18. Event Log Cleared
 Detects Security Event ID 1102 (Security log cleared) and System Event ID 104 (any log cleared) during the current session.
+
+### 19. Smart App Control / App Install Source Restriction
+Detects when Windows is configured to only allow apps recognized by Microsoft, which can block forensic tools like PrefetchView, BAM-Parser, and others from running. Checks Smart App Control state (`VerifiedAndReputablePolicyState`), the `AicEnabled` value (Win10/11 app source setting), and equivalent Group Policy entries.
+
+### 20. USB / Disk Devices Disabled
+Scans `SYSTEM\CurrentControlSet\Enum\USBSTOR`, `USB`, and `DISK` for devices with `ConfigFlags` bit 0 set — meaning they were manually disabled. A disabled USB storage device does not appear in Process Hacker and leaves no extraction timestamp, hiding device activity during a review.
+
+### 21. SettingsPageVisibility (SPV)
+Detects the `SettingsPageVisibility` registry value under Explorer policy keys, which can hide or restrict access to specific Windows Settings pages. This is often combined with other bypass techniques to prevent their detection or removal via the Settings UI.
+
+### 22. NotFileMru — OpenSavePidlMRU Disabled
+Detects `NotFileMru = 1` under `HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\ComDlg32`, which disables the Open/Save file dialog history. When active, files opened or saved through any application dialog are not recorded, removing a key forensic artifact used in screenshare reviews.
 
 ---
 
